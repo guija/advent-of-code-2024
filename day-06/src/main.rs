@@ -74,7 +74,7 @@ fn main() {
 
     dbg!(number_of_steps_until_leaving_map_without_modifying_map);
 
-    // Propagation
+    // Do propagation and infinite loop detection for every field
     let mut max_possible_infininite_loops = 0usize;
     for y in 0..height {
         for x in 0..width {
