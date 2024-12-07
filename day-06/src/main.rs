@@ -69,27 +69,28 @@ fn main() {
         }
     }
 
-    let (number_of_steps_until_leaving_map_without_modifying_map, _) =
-        propagate_and_check_for_infinite_loops(&initial_grid, &initial_state);
+    let (number_of_steps_until_leaving_map_without_modifying_map, _, initial_path) =
+        propagate_and_check_for_infinite_loops(&mut initial_grid, &initial_state);
 
     dbg!(number_of_steps_until_leaving_map_without_modifying_map);
 
     // Do propagation and infinite loop detection for every field
+
     let mut max_possible_infininite_loops = 0usize;
-    for y in 0..height {
-        for x in 0..width {
-            // Ignore initial position
-            if x == initial_state.pos.x && y == initial_state.pos.y {
-                continue;
-            } else {
-                let mut grid = initial_grid.clone();
-                grid[y as usize][x as usize] = '#';
-                let (_positions, is_infinite_loop) =
-                    propagate_and_check_for_infinite_loops(&grid, &initial_state);
-                if is_infinite_loop {
-                    max_possible_infininite_loops += 1;
-                }
+    for Vec2 { x, y } in initial_path {
+        // Ignore initial position
+        if x == initial_state.pos.x && y == initial_state.pos.y {
+            continue;
+        } else {
+            let mut grid = &mut initial_grid;
+            let before = grid[y as usize][x as usize];
+            grid[y as usize][x as usize] = '#';
+            let (_positions, is_infinite_loop, _) =
+                propagate_and_check_for_infinite_loops(&mut grid, &initial_state);
+            if is_infinite_loop {
+                max_possible_infininite_loops += 1;
             }
+            grid[y as usize][x as usize] = before;
         }
     }
     dbg!(max_possible_infininite_loops);
@@ -98,22 +99,21 @@ fn main() {
 /// Returns the steps that the guard makes until either going out of the map
 /// or until identifying the exact same state.
 fn propagate_and_check_for_infinite_loops(
-    initial_grid: &Vec<Vec<char>>,
+    initial_grid: &mut Vec<Vec<char>>,
     initial_state: &State,
-) -> (usize, bool) {
+) -> (usize, bool, HashSet<Vec2>) {
     let mut distinct_positions = HashSet::<Vec2>::new();
     let mut distinct_states = HashSet::<State>::new();
-    let mut array = initial_grid.clone();
     let mut state = initial_state.clone();
-    let height = array.len() as i32;
-    let width = array[0].len() as i32;
+    let height = initial_grid.len() as i32;
+    let width = initial_grid[0].len() as i32;
     loop {
-        array[state.pos.y as usize][state.pos.x as usize] = 'X';
+        // array[state.pos.y as usize][state.pos.x as usize] = 'X';
         distinct_positions.insert(state.pos.clone());
 
         if distinct_states.contains(&state) {
             // Infinite loop, stuck!
-            return (distinct_positions.len(), true);
+            return (distinct_positions.len(), true, distinct_positions);
         } else {
             distinct_states.insert(state.clone());
         }
@@ -135,7 +135,7 @@ fn propagate_and_check_for_infinite_loops(
             break;
         }
 
-        let next_val = array[next_y as usize][next_x as usize];
+        let next_val = initial_grid[next_y as usize][next_x as usize];
 
         if next_val == '#' {
             // Turn right
@@ -156,7 +156,7 @@ fn propagate_and_check_for_infinite_loops(
 
     // println!("{}", distinct_positions.len());
 
-    return (distinct_positions.len(), false);
+    return (distinct_positions.len(), false, distinct_positions);
 }
 
 #[allow(dead_code)]
