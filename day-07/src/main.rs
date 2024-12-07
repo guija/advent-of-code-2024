@@ -17,6 +17,7 @@ impl Op {
     }
 }
 
+// Not generic for arbitrary number of operators :(
 fn generate_combinations<'a>(a: &'a Op, b: &'a Op, c: &'a Op, n: usize) -> Vec<Vec<&'a Op>> {
     if n == 0 {
         return vec![vec![]];
