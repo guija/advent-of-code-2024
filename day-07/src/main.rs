@@ -36,7 +36,6 @@ fn generate_combinations<'a>(operators: &'a [&Op], n: usize) -> Vec<Vec<&'a Op>>
 
 fn main() {
     let file = "input";
-    // let operations = [Op::Add, Op::Mul];
     let mut perm_cache: HashMap<usize, Vec<Vec<&Op>>> = HashMap::new();
     let mut part1_result = 0;
 
