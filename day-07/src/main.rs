@@ -18,28 +18,19 @@ impl Op {
 }
 
 // Not generic for arbitrary number of operators :(
-fn generate_combinations<'a>(a: &'a Op, b: &'a Op, c: &'a Op, n: usize) -> Vec<Vec<&'a Op>> {
+fn generate_combinations<'a>(operators: &'a [&Op], n: usize) -> Vec<Vec<&'a Op>> {
     if n == 0 {
         return vec![vec![]];
     }
-    let smaller_combinations = generate_combinations(a, b, c, n - 1);
-
-    // Expand combinations by adding a and b to each smaller combination
+    let smaller_combinations = generate_combinations(operators, n - 1);
     let mut result = Vec::new();
     for combination in smaller_combinations {
-        let mut with_a = combination.clone();
-        with_a.push(a);
-        result.push(with_a);
-
-        let mut with_b = combination.clone();
-        with_b.push(b);
-        result.push(with_b);
-
-        let mut with_c = combination.clone();
-        with_c.push(c);
-        result.push(with_c);
+        for operator in operators {
+            let mut with_this_op = combination.clone();
+            with_this_op.push(&operator);
+            result.push(with_this_op);
+        }
     }
-
     result
 }
 
@@ -65,9 +56,9 @@ fn main() {
         } else {
             // println!("calc for {}", operators_len);
             // part1:
-            // let per = generate_combinations(&Op::Mul, &Op::Add, operators_len);
+            // let per = generate_combinations(&[&Op::Add], operators_len);
             // part2:
-            let per = generate_combinations(&Op::Mul, &Op::Add, &Op::Concat, operators_len);
+            let per = generate_combinations(&[&Op::Add, &Op::Mul, &Op::Concat], operators_len);
             // dbg!(&per);
             perm_cache.insert(operators_len, per);
             perm_cache.get(&operators_len).unwrap()
