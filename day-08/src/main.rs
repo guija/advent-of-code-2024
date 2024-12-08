@@ -11,12 +11,7 @@ fn main() {
 
 struct Field {
     antinode: bool,
-    field: FieldType,
-}
-
-enum FieldType {
-    Freq(char),
-    Empty,
+    freq: Option<char>,
 }
 
 type Grid = Vec<Vec<Field>>;
@@ -27,14 +22,14 @@ fn part1(grid: &mut Grid) -> usize {
     for y in 0..rows {
         for x in 0..cols {
             let field = &grid[y as usize][x as usize];
-            if let FieldType::Freq(freq) = field.field {
+            if let Some(freq) = field.freq {
                 for y2 in 0..rows {
                     for x2 in 0..cols {
                         if y2 == y && x2 == x {
                             continue;
                         }
                         let other_field = &grid[y2 as usize][x2 as usize];
-                        if let FieldType::Freq(other_freq) = other_field.field {
+                        if let Some(other_freq) = other_field.freq {
                             // part 1
                             if freq == other_freq {
                                 // Found pair of same frequency
@@ -62,7 +57,7 @@ fn part2(grid: &mut Grid) -> usize {
     for y in 0..rows {
         for x in 0..cols {
             let field = &grid[y as usize][x as usize];
-            if let FieldType::Freq(freq) = field.field {
+            if let Some(freq) = field.freq {
                 // Bruteforce for now, we can start after the current element if we want
                 for y2 in 0..rows {
                     for x2 in 0..cols {
@@ -70,7 +65,7 @@ fn part2(grid: &mut Grid) -> usize {
                             continue;
                         }
                         let other_field = &grid[y2 as usize][x2 as usize];
-                        if let FieldType::Freq(other_freq) = other_field.field {
+                        if let Some(other_freq) = other_field.freq {
                             if freq == other_freq {
                                 // Found pair of same values
                                 // Go into the direction as often as possible
@@ -111,12 +106,12 @@ fn read_grid(s: &str) -> Grid {
             if let Some(_captures) = freq_regex.captures(&format!("{}", char)) {
                 row.push(Field {
                     antinode: false,
-                    field: FieldType::Freq(char),
+                    freq: Some(char),
                 });
             } else if char == '.' {
                 row.push(Field {
                     antinode: false,
-                    field: FieldType::Empty,
+                    freq: None,
                 });
             } else {
                 panic!("Invalid char {}", char);
