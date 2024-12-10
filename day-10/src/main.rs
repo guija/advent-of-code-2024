@@ -1,8 +1,13 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 struct Grid {
     grid: Vec<Vec<i32>>,
 }
+
+// TODOs
+// impl iter for grid to go over all positions
+// overload plus for vectors
+// Make grid generic
 
 impl Grid {
     fn height(&self) -> usize {
