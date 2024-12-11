@@ -4,11 +4,6 @@ struct Grid {
     grid: Vec<Vec<i32>>,
 }
 
-// TODOs
-// impl iter for grid to go over all positions
-// overload plus for vectors
-// Make grid generic
-
 impl Grid {
     fn height(&self) -> usize {
         self.grid.len()
@@ -76,16 +71,6 @@ impl Dir {
 }
 
 fn main() {
-    let input = "89010123
-78121874
-87430965
-96549874
-45678903
-32019012
-01329801
-10456732
-";
-
     let input = std::fs::read_to_string("input").unwrap();
     let grid = Grid::from_str(input.as_str());
 
@@ -95,6 +80,7 @@ fn main() {
 
     // Impl an iterator for this
     let mut starting_positions = Vec::<Vec2>::new();
+
     for y in 0..grid.height() {
         for x in 0..grid.width() {
             let current = grid.get(y, x);
