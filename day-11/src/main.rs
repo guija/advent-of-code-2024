@@ -12,32 +12,26 @@ fn main() {
 
 fn solve(nums: &Vec<i64>, iterations: usize) -> i64 {
     let mut cache = HashMap::<(i64, usize), i64>::new();
-    let mut sum: i64 = 0;
-    for i in nums.clone() {
-        sum += dfs(i, iterations, &mut cache);
-    }
-    sum
+    return nums.iter().map(|n| dfs(*n, iterations, &mut cache)).sum();
 }
 
 fn dfs(x: i64, depth: usize, cache: &mut HashMap<(i64, usize), i64>) -> i64 {
     if let Some(r) = cache.get(&(x, depth)) {
         return *r;
+    } else if depth == 0 {
+        return 1;
     }
-    let result = if depth == 0 {
-        1
+    let result = if x == 0 {
+        dfs(1, depth - 1, cache)
     } else {
-        if x == 0 {
-            dfs(1, depth - 1, cache)
+        let s = x.to_string();
+        if s.len() % 2 == 0 {
+            let half_length = s.len() / 2;
+            let left = &s[0..half_length].parse::<i64>().unwrap();
+            let right = &s[half_length..].parse::<i64>().unwrap();
+            dfs(*left, depth - 1, cache) + dfs(*right, depth - 1, cache)
         } else {
-            let s = x.to_string();
-            if s.len() % 2 == 0 {
-                let half_length = s.len() / 2;
-                let left = &s[0..half_length].parse::<i64>().unwrap();
-                let right = &s[half_length..].parse::<i64>().unwrap();
-                dfs(*left, depth - 1, cache) + dfs(*right, depth - 1, cache)
-            } else {
-                dfs(x * 2024, depth - 1, cache)
-            }
+            dfs(x * 2024, depth - 1, cache)
         }
     };
     cache.insert((x, depth), result);
